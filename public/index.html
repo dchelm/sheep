@@ -14,7 +14,7 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function preload() {
 	game.load.image('sky', 'images/sky.png');
@@ -32,7 +32,7 @@ function create() {
 	platforms = game.add.group();
 	platforms.enableBody = true;
 	var  ground = platforms.create(0,game.world.height - 64,'ground');
-	ground.scale.setTo(2,2);
+	ground.scale.setTo(1,2);
 	ground.body.immovable = true;
 	/*
 	var ledge = platforms.create(400,400,'ground');
@@ -83,7 +83,7 @@ function update() {
 
 	game.physics.arcade.overlap(player, baddies, collideBaddie, null, this);
 	game.physics.arcade.overlap(stars, baddies, shootBaddie, null, this);
-	
+
     game.debug.text('Score: ' + total, 32, 64);
 
 	if(cursor.left.isDown)
@@ -144,7 +144,7 @@ function shootBaddie (star, baddie) {
 	total += 100;
 	for(i=0;i<2;i++)
 	{
-		var baddie = baddies.create(800*Math.random(),0,'baddie');
+		var baddie = baddies.create(game.world.width*Math.random(),0,'baddie');
 		baddie.body.collideWorldBounds = true;
 		baddie.animations.add('left',[0,1], 4, true);
 		baddie.animations.add('right',[2,3], 4, true);
