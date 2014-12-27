@@ -137,6 +137,13 @@ function update() {
 function shootBaddie (star, baddie) {
 	baddie.kill();
 	star.kill();
+	for(i=0;i<2;i++)
+	{
+		var baddie = baddies.create(800*Math.random(),0,'baddie');
+		baddie.body.collideWorldBounds = true;
+		baddie.animations.add('left',[0,1], 4, true);
+		baddie.animations.add('right',[2,3], 4, true);
+	}
 }
 
 function collideBaddie (player, baddie) {
