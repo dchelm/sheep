@@ -25,6 +25,7 @@ function preload() {
 }
 
 var total = 0;
+var dead = false;
 
 function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -119,7 +120,7 @@ function update() {
     if(!cursor.up.isDown){
     	this.canJump = true;
     }
-    if(fireButton.isDown && this.canShoot)
+    if(fireButton.isDown && this.canShoot && !dead)
     {
     	this.canShoot = false;
 		var star = stars.create(player.x,player.y,'star');
@@ -153,6 +154,7 @@ function shootBaddie (star, baddie) {
 
 function collideBaddie (player, baddie) {
     player.kill();
+    dead =true;
 }
 
  
