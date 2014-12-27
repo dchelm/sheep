@@ -24,6 +24,8 @@ function preload() {
 	game.load.spritesheet('dude','images/dude.png',32,48);
 }
 
+var total = 0;
+
 function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	game.add.sprite(0,0,'sky');
@@ -81,6 +83,8 @@ function update() {
 
 	game.physics.arcade.overlap(player, baddies, collideBaddie, null, this);
 	game.physics.arcade.overlap(stars, baddies, shootBaddie, null, this);
+	
+    game.debug.text('Score: ' + total, 32, 64);
 
 	if(cursor.left.isDown)
 	{
@@ -137,6 +141,7 @@ function update() {
 function shootBaddie (star, baddie) {
 	baddie.kill();
 	star.kill();
+	total += 100;
 	for(i=0;i<2;i++)
 	{
 		var baddie = baddies.create(800*Math.random(),0,'baddie');
@@ -149,6 +154,7 @@ function shootBaddie (star, baddie) {
 function collideBaddie (player, baddie) {
     player.kill();
 }
+
  
 </script>
 
