@@ -19,6 +19,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 function preload() {
 	game.load.image('sky', 'images/sky.png');
 	game.load.image('ground', 'images/platform.png');
+	game.load.image('star', 'images/star.png');
 	game.load.spritesheet('baddie', 'images/baddie.png',32,32);
 	game.load.spritesheet('dude','images/dude.png',32,48);
 }
@@ -37,7 +38,7 @@ function create() {
 	ledge = platforms.create(-150,250,'ground');
 	ledge.body.immovable = true;
 */
-	//baddies
+	//BADDIES
 	baddies = game.add.group();
 	baddies.enableBody = true;
 	for(var i = 0;i<5;i++)
@@ -47,6 +48,10 @@ function create() {
 		baddie.animations.add('left',[0,1], 4, true);
 		baddie.animations.add('right',[2,3], 4, true);
 	}
+
+	//STARS
+	stars = game.add.group();
+	stars.enableBody = true;
 	
 	//PLAYER
 	player = game.add.sprite(32, game.world.height - 150, 'dude');
@@ -61,7 +66,12 @@ function create() {
 
 	this.jumps = 1;
 	this.canJump = true;
+	this.canShoot = true;
+	this.facing = 1;
+
 	cursor = game.input.keyboard.createCursorKeys();
+    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
 }
 
 function update() {
@@ -70,16 +80,19 @@ function update() {
 	game.physics.arcade.collide(baddies, platforms);
 
 	game.physics.arcade.overlap(player, baddies, collideBaddie, null, this);
+	game.physics.arcade.overlap(stars, baddies, shootBaddie, null, this);
 
 	if(cursor.left.isDown)
 	{
 		player.body.velocity.x -= 10;
 		player.animations.play('left');
+		this.facing = -1;
 	}
 	else if(cursor.right.isDown)
 	{
 		player.body.velocity.x += 10;
 		player.animations.play('right');
+		this.facing = 1;
 	}
     else
     {
@@ -102,6 +115,16 @@ function update() {
     if(!cursor.up.isDown){
     	this.canJump = true;
     }
+    if(fireButton.isDown && this.canShoot)
+    {
+    	this.canShoot = false;
+		var star = stars.create(player.x,player.y,'star');
+		star.body.velocity.x = this.facing>0?400:-400;
+    }
+    if(!fireButton.isDown){
+    	this.canShoot = true;
+    }
+
     baddies.forEach(function(baddie){
     	deltaX = player.body.x - baddie.body.x < 0? -2:2;
     	deltaY = player.body.y - baddie.body.y < 0? -2:2;
@@ -109,6 +132,11 @@ function update() {
     	baddie.body.velocity.y += deltaY*Math.random();
     	baddie.body.velocity.x > 0 ? baddie.animations.play('right'):baddie.animations.play('left');
     },this);
+}
+
+function shootBaddie (star, baddie) {
+	baddie.kill();
+	star.kill();
 }
 
 function collideBaddie (player, baddie) {
