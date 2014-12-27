@@ -19,7 +19,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 function preload() {
 	game.load.image('sky', 'images/sky.png');
 	game.load.image('ground', 'images/platform.png');
-	game.load.image('star', 'images/star.png');
+	game.load.spritesheet('baddie', 'images/baddie.png',32,32);
 	game.load.spritesheet('dude','images/dude.png',32,48);
 }
 
@@ -37,13 +37,15 @@ function create() {
 	ledge = platforms.create(-150,250,'ground');
 	ledge.body.immovable = true;
 */
-	//STARS
-	stars = game.add.group();
-	stars.enableBody = true;
+	//baddies
+	baddies = game.add.group();
+	baddies.enableBody = true;
 	for(var i = 0;i<5;i++)
 	{
-		var star = stars.create(120*i,0,'star');
-		star.body.collideWorldBounds = true;
+		var baddie = baddies.create(120*i,0,'baddie');
+		baddie.body.collideWorldBounds = true;
+		baddie.animations.add('left',[0,1], 4, true);
+		baddie.animations.add('right',[2,3], 4, true);
 	}
 	
 	//PLAYER
@@ -65,9 +67,9 @@ function create() {
 function update() {
 
 	game.physics.arcade.collide(player, platforms);
-	game.physics.arcade.collide(stars, platforms);
+	game.physics.arcade.collide(baddies, platforms);
 
-	game.physics.arcade.overlap(player, stars, collectStar, null, this);
+	game.physics.arcade.overlap(player, baddies, collideBaddie, null, this);
 
 	if(cursor.left.isDown)
 	{
@@ -100,15 +102,16 @@ function update() {
     if(!cursor.up.isDown){
     	this.canJump = true;
     }
-    stars.forEach(function(star){
-    	deltaX = player.body.x - star.body.x < 0? -2:2;
-    	deltaY = player.body.y - star.body.y < 0? -2:2;
-    	star.body.velocity.x += deltaX*Math.random();
-    	star.body.velocity.y += deltaY*Math.random();
+    baddies.forEach(function(baddie){
+    	deltaX = player.body.x - baddie.body.x < 0? -2:2;
+    	deltaY = player.body.y - baddie.body.y < 0? -2:2;
+    	baddie.body.velocity.x += deltaX*Math.random();
+    	baddie.body.velocity.y += deltaY*Math.random();
+    	baddie.body.velocity.x > 0 ? baddie.animations.play('right'):baddie.animations.play('left');
     },this);
 }
 
-function collectStar (player, star) {
+function collideBaddie (player, baddie) {
     player.kill();
 }
  
