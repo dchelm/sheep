@@ -53,6 +53,7 @@ function create() {
 	}
 
 	//STARS
+	this.bulletSpeed = 400;
 	stars = game.add.group();
 	stars.enableBody = true;
 	
@@ -123,8 +124,15 @@ function update() {
     if(fireButton.isDown && this.canShoot && !dead)
     {
     	this.canShoot = false;
+
+		mouseX = game.input.mousePointer.x;
+		mouseY = game.input.mousePointer.y;
+		alpha = cot((player.body.y - mouseY)/(player.body.x-mouseX));
+
 		var star = stars.create(player.x,player.y,'star');
-		star.body.velocity.x = this.facing>0?400:-400;
+		star.body.velocity.x = this.bulletSpeed*math.sin(alpha);
+		star.body.velocity.y = this.bulletSpeed*math.cot(alpha);
+		
     }
     if(!fireButton.isDown){
     	this.canShoot = true;
