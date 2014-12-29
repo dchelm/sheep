@@ -74,8 +74,14 @@ function create() {
 	this.facing = 1;
 
 	cursor = game.input.keyboard.createCursorKeys();
-    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+    this.wasd = {
+        up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+        down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+        left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+        right: game.input.keyboard.addKey(Phaser.Keyboard.D),
+        space: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+    };
 }
 
 function update() {
@@ -88,13 +94,13 @@ function update() {
 
     game.debug.text('Score: ' + total, 32, 64);
 
-	if(cursor.left.isDown)
+	if(this.wasd.left.isDown)
 	{
 		player.body.velocity.x -= 10;
 		player.animations.play('left');
 		this.facing = -1;
 	}
-	else if(cursor.right.isDown)
+	else if(this.wasd.right.isDown)
 	{
 		player.body.velocity.x += 10;
 		player.animations.play('right');
@@ -107,7 +113,7 @@ function update() {
         player.animations.stop();
         player.frame = 4;
     }
-    if(cursor.up.isDown && this.canJump && (player.body.touching.down || this.jumps>0))
+    if((this.wasd.up.isDown||this.wasd.space.isDown) && this.canJump && (player.body.touching.down || this.jumps>0))
     {
     	this.canJump = false;
     	if(player.body.touching.down)
@@ -118,23 +124,27 @@ function update() {
     	}
     	player.body.velocity.y = -350;
     }
-    if(!cursor.up.isDown){
+    if(!(this.wasd.up.isDown||this.wasd.space.isDown)){
     	this.canJump = true;
     }
-    if(fireButton.isDown && this.canShoot && !dead)
+    if(game.input.activePointer.isDown && this.canShoot && !dead)
     {
     	this.canShoot = false;
 
 		mouseX = game.input.mousePointer.x;
 		mouseY = game.input.mousePointer.y;
-		alpha = cot((player.body.y - mouseY)/(player.body.x-mouseX));
+		deltaX = mouseX - player.x;
+		deltaY = mouseY - player.y;
+
+		alpha = Math.atan(deltaX/deltaY);
 
 		var star = stars.create(player.x,player.y,'star');
-		star.body.velocity.x = this.bulletSpeed*math.sin(alpha);
-		star.body.velocity.y = this.bulletSpeed*math.cot(alpha);
-		
+		star.body.velocity.x = -this.bulletSpeed*Math.sin(alpha);
+		star.body.velocity.y = -this.bulletSpeed*Math.cos(alpha);
+		star.body.velocity.x *= deltaY < 0? 1:-1;
+		star.body.velocity.y *= deltaY < 0? 1:-1;
     }
-    if(!fireButton.isDown){
+    if(!game.input.activePointer.isDown){
     	this.canShoot = true;
     }
 

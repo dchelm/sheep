@@ -4,6 +4,7 @@ GEM
     rack (1.6.0)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
